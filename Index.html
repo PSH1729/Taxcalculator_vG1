@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FY2025-26 Income Tax Calculator</title>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .calculator-container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus {
+            border-color: #007bff;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button hover {
+            background-color: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ececec;
+        }
+        .output table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .output td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        .output td:first-child {
+            font-weight: bold;
+            width: 60%;
+        }
+        .highlight-red {
+            color: #ff4500;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>FY2025-26 Income Tax Calculator</h1>
+        <form id="taxForm">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" required>
+            <label for="income">Annual Income:</label>
+            <input type="number" id="income" required>
+            <button type="button" onclick="calculateTax()">Calculate Tax</button>
+        </form>
+        <div class="output" id="results">
+            <table>
+                <tr>
+                    <td>Total Annual Income:</td>
+                    <td><span id="totalIncome"></span></td>
+                </tr>
+                <tr>
+                    <td>Standard Deduction:</td>
+                    <td><span id="standardDeduction"></span></td>
+                </tr>
+                <tr>
+                    <td>Income Tax:</td>
+                    <td><span id="incomeTax"></span></td>
+                </tr>
+                <tr>
+                    <td>Surcharge:</td>
+                    <td><span id="surcharge"></span></td>
+                </tr>
+                <tr>
+                    <td>Total Tax before Rebate:</td>
+                    <td><span id="totalTaxBeforeRebate"></span></td>
+                </tr>
+                <tr>
+                    <td>Rebate:</td>
+                    <td><span id="rebate"></span></td>
+                </tr>
+                <tr>
+                    <td>Tax after Rebate:</td>
+                    <td><span id="taxAfterRebate"></span></td>
+                </tr>
+                <tr>
+                    <td>Cess:</td>
+                    <td><span id="cess"></span></td>
+                </tr>
+                <tr>
+                    <td>Total Tax Payable:</td>
+                    <td><span id="totalTaxPayable" class="highlight-red"></span></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <script>
+        function calculateTax() {
+            const income = parseFloat(document.getElementById('income').value);
+            let incomeTax = 0;
+            let surcharge = 0;
+            let rebate = 0;
+            let taxAfterRebate = 0;
+            letcess = 0;
+            let totalTaxPayable = 0;
+
+            // Calculate income tax based on new tax regime slabs
+            if (income > 2400000) {
+                incomeTax += (income - 2400000) * 0.30;
+                income = 2400000;
+            }
+            if (income > 2000000) {
+                incomeTax += (income - 2000000) * 0.25;
+                income = 2000000;
+            }
+            if (income > 1600000) {
+                incomeTax += (income - 1600000) * 0.20;
+                income = 1600000;
+            }
+            if (income > 1200000) {
+                incomeTax += (income - 1200000) * 0.15;
+                income = 1200000;
+            }
+            if (income > 800000) {
+                incomeTax += (income - 800000) * 0.10;
+                income = 800000;
+            }
+            if (income > 400000) {
+                incomeTax += (income - 400000) * 0.05;
+            }
+
+            // Calculate surcharge based on total income
+            if (income > 5000000 && income <= 10000000) {
+                surcharge = incomeTax * 0.10;
+            } else if (income > 10000000 && income <= 20000000) {
+                surcharge = incomeTax * 0.15;
+            } else if (income > 20000000 && income <= 50000000) {
+                surcharge = incomeTax * 0.25;
+            } else if (income > 50000000) {
+                surcharge = incomeTax * 0.37;
+            }
+
+            // Calculate total tax before rebate
+            let totalTaxBeforeRebate = incomeTax + surcharge;
+
+            // Calculate rebate
+            rebate = Math.min(totalTaxBeforeRebate, 60000);
+
+            // Calculate tax after rebate
+            taxAfterRebate = totalTaxBeforeRebate - rebate;
+
+            // Calculatecess
+           cess = taxAfterRebate * 0.04;
+
+            // Calculate total tax payable
+            totalTaxPayable = taxAfterRebate +cess;
+
+            // Display results
+            document.getElementById('totalIncome').innerText = income.toLocaleString();
+            document.getElementById('standardDeduction').innerText = "0.00";
+            document.getElementById('incomeTax').innerText = incomeTax.toLocaleString();
+            document.getElementById('surcharge').innerText = surcharge.toLocaleString();
+            document.getElementById('totalTaxBeforeRebate').innerText = totalTaxBeforeRebate.toLocaleString();
+            document.getElementById('rebate').innerText = rebate.toLocaleString();
+            document.getElementById('taxAfterRebate').innerText = taxAfterRebate.toLocaleString();
+            document.getElementById('cess').innerText =cess.toLocaleString();
+            document.getElementById('totalTaxPayable').innerText = totalTaxPayable.toLocaleString();
+        }
+    </script>
+</body>
+</html>
